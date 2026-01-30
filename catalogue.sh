@@ -81,7 +81,7 @@ VALIDATE $? "Daemon reload catalogue"
 systemctl enable catalogue &>>$LOG_FILE
 VALIDATE $? "Enabling catalogue"
 
-systemctl start catalogue &>>$LOG_FILE
+systemctl restart catalogue &>>$LOG_FILE
 VALIDATE $? "Starting catalogue"
 
 dnf install mongodb-mongosh -y &>>$LOG_FILE

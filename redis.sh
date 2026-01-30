@@ -42,7 +42,7 @@ VALIDATE $? "redis conf file changes"
 systemctl enable redis &>>LOG_FILE
 VALIDATE $? "Enable redis"
 
-systemctl start redis &>>LOG_FILE
+systemctl restart redis &>>LOG_FILE
 VALIDATE $? "Start redis"
 
 

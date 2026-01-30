@@ -84,7 +84,7 @@ VALIDATE $? "Daemon reload cart"
 systemctl enable cart &>>$LOG_FILE
 VALIDATE $? "Enabling cart"
 
-systemctl start cart &>>$LOG_FILE
+systemctl restart cart &>>$LOG_FILE
 VALIDATE $? "Starting cart"
 
 END_TIMESTAMP=$(date +%s)
