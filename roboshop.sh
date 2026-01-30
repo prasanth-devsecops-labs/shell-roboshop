@@ -21,26 +21,37 @@ DOMAIN_NAME="prashum.online"
 
 for instance in $@
 do
-    INSTANCE_ID=$( aws ec2 run-instances \
-    --image-id $AMI_ID \
-    --instance-type t3.micro \
-    --security-group-ids $SECURITY_GROUP_ID \
-    --query 'Instances[0].InstanceId' \
-    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" \
-    --output text )
 
-    aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
+    EXISTING_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running,pending" \
+            --query 'Reservations[].Instances[].InstanceId' \
+            --output text)
+
+    if [ -n "$EXISTING_ID" ]; then
+        echo "Instance for $instance already exists ($EXISTING_ID). Skipping creation."
+        INSTANCE_ID=$EXISTING_ID
+    else
+        echo "Creating new instance for $instance..."
+        INSTANCE_ID=$(aws ec2 run-instances \
+        --image-id $AMI_ID \
+        --instance-type t3.micro \
+        --security-group-ids $SECURITY_GROUP_ID \
+        --query 'Instances[0].InstanceId' \
+        --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" \
+        --output text)
+
+        aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
 
     if [ $instance == "frontend" ]; then
-        IP=$( aws ec2 describe-instances \
+        IP=$(aws ec2 describe-instances \
         --instance-ids $INSTANCE_ID \
-        --query "Reservations[].Instances[].PublicIpAddress" --output text )
+        --query "Reservations[].Instances[].PublicIpAddress" --output text)
 
         RECORD_NAME="$DOMAIN_NAME"
     else
-        IP=$( aws ec2 describe-instances \
+        IP=$(aws ec2 describe-instances \
         --instance-ids $INSTANCE_ID \
-        --query "Reservations[].Instances[].PrivateIpAddress" --output text )
+        --query "Reservations[].Instances[].PrivateIpAddress" --output text)
 
         RECORD_NAME="$instance.$DOMAIN_NAME"
     fi
@@ -67,7 +78,6 @@ do
             }
         ]
     }"
-
 
     echo "Records updated for $instance"
 
