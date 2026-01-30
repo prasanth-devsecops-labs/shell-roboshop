@@ -5,10 +5,10 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
-WORKING_DIR=$PWD
+USER_HOME_DIR=$HOME
 
 USERID=$(id -u)
-LOGS_FOLDER="${WORKING_DIR}/var/log/shell-roboshop"
+LOGS_FOLDER="${USER_HOME_DIR}/var/log/shell-roboshop"
 LOG_FILE="${LOGS_FOLDER}/$0.log"
 
 mkdir -p $LOGS_FOLDER

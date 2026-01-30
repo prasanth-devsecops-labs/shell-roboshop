@@ -5,10 +5,10 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
-WORKING_DIR=$PWD
+USER_HOME_DIR=$HOME
 
 USERID=$(id -u)
-LOGS_FOLDER="${WORKING_DIR}/var/log/shell-roboshop"
+LOGS_FOLDER="${USER_HOME_DIR}/var/log/shell-roboshop"
 LOG_FILE="${LOGS_FOLDER}/$0.log"
 MONGODB_HOST="mongodb.prashum.online"
 
@@ -70,7 +70,7 @@ dnf install mongodb-mongosh -y &>>$LOG_FILE
 VALIDATE $? "Installing mongo client"
 
 INDEX=$(mongosh --host $MONGODB_HOST --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
-if [ "$INDEX" -lt 0 ]; then
+if [ "$INDEX" -le 0 ]; then
     echo -e "Database 'catalogue' $Y NOT FOUND $N. Loading schema..."
     mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOG_FILE
     VALIDATE $? "Loading Master data"
