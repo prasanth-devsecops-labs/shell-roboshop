@@ -25,8 +25,11 @@ do
     --image-id $AMI_ID \
     --instance-type t3.micro \
     --security-group-ids $SECURITY_GROUP_ID \
-    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" )
+    --query 'Instances[0].InstanceId' \
+    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" 
+    --output text )
 
+    aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
 
     if [ $instance == "frontend" ]; then
         IP=$( aws ec2 describe-instances \
