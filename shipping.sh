@@ -49,6 +49,12 @@ VALIDATE $? "removing old content from app directory"
 unzip /tmp/shipping.zip &>>$LOG_FILE
 VALIDATE $? "unzipping shipping code"
 
+mvn clean package &>>$LOG_FILE
+VALIDATE $? "maven clean"
+
+mv target/shipping-1.0.jar shipping.jar &>>$LOG_FILE
+VALIDATE $? "rename shipping"
+
 systemctl daemon-reload &>>$LOG_FILE
 VALIDATE $? "Daemon reload shipping"
 
