@@ -5,11 +5,12 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
-USER_HOME_DIR=$HOME
+# USER_HOME_DIR=$HOME
 
 USERID=$(id -u)
-LOGS_FOLDER="${USER_HOME_DIR}/var/log/shell-roboshop"
-LOG_FILE="${LOGS_FOLDER}/$0.log"
+LOGS_FOLDER="/var/log/shell-roboshop"
+SCRIPT_NAME=$(basename "$0")
+LOG_FILE="${LOGS_FOLDER}/${SCRIPT_NAME}.log"
 
 mkdir -p $LOGS_FOLDER
 
