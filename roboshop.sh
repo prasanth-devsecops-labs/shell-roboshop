@@ -60,24 +60,26 @@ do
 
     aws route53 change-resource-record-sets \
     --hosted-zone-id "$HOSTED_ZONE_ID" \
-    --change-batch "{
-        \"Comment\": \"Updating record\",
-        \"Changes\": [
+    --change-batch '
+    {
+        "Comment": "Updating record",
+        "Changes": [
             {
-                \"Action\": \"UPSERT\",
-                \"ResourceRecordSet\": {
-                    \"Name\": \"$RECORD_NAME\",
-                    \"Type\": \"A\",
-                    \"TTL\": 1,
-                    \"ResourceRecords\": [
+                "Action": "UPSERT",
+                "ResourceRecordSet": {
+                    "Name": "'$RECORD_NAME'",
+                    "Type": "A",
+                    "TTL": 1,
+                    "ResourceRecords": [
                         {
-                            \"Value\": \"$IP\"
+                            "Value": "'$IP'"
                         }
                     ]
                 }
             }
         ]
-    }"
+    }
+    '
 
     echo "Records updated for $instance"
 
