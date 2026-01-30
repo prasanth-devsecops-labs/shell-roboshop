@@ -10,7 +10,7 @@ USER_HOME_DIR=$HOME
 USERID=$(id -u)
 LOGS_FOLDER="${USER_HOME_DIR}/var/log/shell-roboshop"
 LOG_FILE="${LOGS_FOLDER}/$0.log"
-MONGODB_HOST="mongodb.prashum.online"
+MONGODB_HOST=mongodb.prashum.online
 
 mkdir -p $LOGS_FOLDER
 
