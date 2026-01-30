@@ -25,8 +25,12 @@ VALIDATE() {
 cp mongo.repo /etc/yum.repos.d/mongo.repo | tee -a $LOG_FILE
 VALIDATE $? "Creating mongo repo file"
 
-dnf install mongodb-org -y &>>$LOG_FILE
-VALIDATE $? "installing mongo-server"
+if rpm -q mongodb-org &> /dev/null; then
+    echo -e "MongoDB is $G ALREADY INSTALLED $N .. Skipping installation."
+else
+    dnf install mongodb-org -y &>>$LOG_FILE
+    VALIDATE $? "installing mongo-server"
+fi
 
 systemctl enable mongod &>>$LOG_FILE
 VALIDATE $? "Enabling mongod"
