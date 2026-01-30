@@ -60,6 +60,8 @@ VALIDATE $? "unzipping catalogue code"
 npm install &>>$LOG_FILE
 VALIDATE $? "installing dependencies with npm"
 
+systemctl daemon-reload
+
 systemctl enable catalogue &>>$LOG_FILE
 VALIDATE $? "Enabling catalogue"
 
