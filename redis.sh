@@ -1,5 +1,8 @@
 #!/bin/bash
 
+START_TIMESTAMP=$(date +%s)
+START_TIME_READABLE=$(date)
+
 R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
@@ -41,3 +44,17 @@ VALIDATE $? "Enable redis"
 
 systemctl start redis &>>LOG_FILE
 VALIDATE $? "Start redis"
+
+
+END_TIMESTAMP=$(date +%s)
+# Calculate difference
+DURATION=$((END_TIMESTAMP - START_TIMESTAMP))
+
+# Format the output into Minutes and Seconds
+MINUTES=$((DURATION / 60))
+SECONDS_REM=$((DURATION % 60))
+
+echo -e "\n$G------------------------------------------$N"
+echo -e "Script Started at: $START_TIME_READABLE"
+echo -e "Total Time Taken:  $G ${MINUTES}m ${SECONDS_REM}s $N"
+echo -e "$G------------------------------------------$N"
