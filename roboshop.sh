@@ -21,7 +21,6 @@ DOMAIN_NAME="prashum.online"
 
 for instance in $@
 do
-
     EXISTING_ID=$(aws ec2 describe-instances \
             --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running,pending" \
             --query 'Reservations[].Instances[].InstanceId' \
@@ -41,6 +40,7 @@ do
         --output text)
 
         aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
+    fi
 
     if [ $instance == "frontend" ]; then
         IP=$(aws ec2 describe-instances \
