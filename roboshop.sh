@@ -81,6 +81,6 @@ do
     }
     '
 
-    echo "Records updated for $instance"
+    echo -e "Records updated for $instance $G successfully $N"
 
 done
