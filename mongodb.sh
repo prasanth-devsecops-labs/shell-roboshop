@@ -5,7 +5,7 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
-WORKING_DIR=$(PWD)
+WORKING_DIR=$PWD
 
 USERID=$(id -u)
 LOGS_FOLDER="${WORKING_DIR}/var/log/shell-roboshop"
