@@ -1,5 +1,8 @@
 #!/bin/bash
 
+START_TIMESTAMP=$(date +%s)
+START_TIME_READABLE=$(date)
+
 R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
@@ -16,7 +19,7 @@ MONGODB_HOST=mongodb.prashum.online
 mkdir -p $LOGS_FOLDER
 
 cp mongo.repo /etc/yum.repos.d/mongo.repo
-cp catalogue.service /etc/systemd/system/catalogue.service
+cp user.service /etc/systemd/system/user.service
 
 mkdir -p /app
 
@@ -60,8 +63,8 @@ else
     echo -e "roboshop user already exists $Y SKIPPING $N"
 fi
 
-curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOG_FILE
-VALIDATE $? "catalogue source code zip download"
+curl -o /tmp/user.zip https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip &>>$LOG_FILE
+VALIDATE $? "user source code zip download"
 
 cd /app &>>$LOG_FILE
 VALIDATE $? "moving into app directory"
@@ -69,32 +72,31 @@ VALIDATE $? "moving into app directory"
 rm -rf /app/* &>>$LOG_FILE
 VALIDATE $? "removing old content from app directory"
 
-unzip /tmp/catalogue.zip &>>$LOG_FILE
-VALIDATE $? "unzipping catalogue code"
+unzip /tmp/user.zip &>>$LOG_FILE
+VALIDATE $? "unzipping user code"
  
 npm install &>>$LOG_FILE
 VALIDATE $? "installing dependencies with npm"
 
 systemctl daemon-reload &>>$LOG_FILE
-VALIDATE $? "Daemon reload catalogue"
+VALIDATE $? "Daemon reload user"
 
-systemctl enable catalogue &>>$LOG_FILE
-VALIDATE $? "Enabling catalogue"
+systemctl enable user &>>$LOG_FILE
+VALIDATE $? "Enabling user"
 
-systemctl start catalogue &>>$LOG_FILE
-VALIDATE $? "Starting catalogue"
+systemctl start user &>>$LOG_FILE
+VALIDATE $? "Starting user"
 
-dnf install mongodb-mongosh -y &>>$LOG_FILE
-VALIDATE $? "Installing mongo client"
+END_TIMESTAMP=$(date +%s)
+# Calculate difference
+DURATION=$((END_TIMESTAMP - START_TIMESTAMP))
 
-INDEX=$(mongosh --host $MONGODB_HOST --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
-if [ "$INDEX" -le 0 ]; then
-    echo -e "Database 'catalogue' $Y NOT FOUND $N. Loading schema..."
-    mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOG_FILE
-    VALIDATE $? "Loading Master data"
-else
-    echo -e "Database 'catalogue' $G ALREADY EXISTS $N. Skipping schema load."
-fi
+# Format the output into Minutes and Seconds
+MINUTES=$((DURATION / 60))
+SECONDS_REM=$((DURATION % 60))
 
-systemctl restart catalogue &>>$LOG_FILE
-VALIDATE $? "Restarting catalogue"
+echo -e "\n$G------------------------------------------$N"
+echo -e "Script Started at: $START_TIME_READABLE"
+echo -e "Total Time Taken:  $G ${MINUTES}m ${SECONDS_REM}s $N"
+echo -e "$G------------------------------------------$N"
+
