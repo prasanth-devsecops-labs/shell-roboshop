@@ -26,7 +26,7 @@ do
     --instance-type t3.micro \
     --security-group-ids $SECURITY_GROUP_ID \
     --query 'Instances[0].InstanceId' \
-    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" 
+    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" \
     --output text )
 
     aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
