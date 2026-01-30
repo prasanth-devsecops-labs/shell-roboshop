@@ -11,12 +11,33 @@ USERID=$(id -u)
 LOGS_FOLDER="${WORKING_DIR}/var/log/shell-roboshop"
 LOG_FILE="${LOGS_FOLDER}/$0.log"
 
+mkdir -p $LOGS_FOLDER
+
 VALIDATE() {
     if [ $1 -ne 0 ]; then
-        echo "$2 .. $R FAILURE $N"
+        echo "$2 .. $R FAILURE $N" | tee -a $LOG_FILE
         exit 1
     else
-        echo "$2 .. $G SUCCESS $N"
+        echo "$2 .. $G SUCCESS $N" | tee -a $LOG_FILE
     fi
 }
 
+cp mongo.repo /etc/yum.repos.d/mongo.repo | tee -a $LOG_FILE
+VALIDATE $? "Creating mongo repo file"
+
+dnf install mongodb-org -y &>>$LOG_FILE
+VALIDATE $? "installing mongo-server"
+
+systemctl enable mongod &>>$LOG_FILE
+VALIDATE $? "Enable mongod"
+
+systemctl start mongod
+VALIDATE $? "Start mongod"
+
+#127.0.0.1 to 0.0.0.0 in /etc/mongod.conf
+
+sed -i "s/127.0.0.1/0.0.0.0/g" /etc/mongod.conf
+VALIDATE $? "Change ip bind"
+
+systemctl restart mongod
+VALIDATE $? "Restart mongod"
