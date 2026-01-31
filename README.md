@@ -14,9 +14,11 @@ AWS CLI: Configured on your workstation to manage Route53 and EC2 states.
 
 # 🛠️ How to Deploy
 Clone the repository:
-bash
+
 git clone https://github.com/prasanth-devsecops-labs/shell-roboshop.git
+
 cd shell-roboshop
+
 Use code with caution.
 
 Run the scripts:
