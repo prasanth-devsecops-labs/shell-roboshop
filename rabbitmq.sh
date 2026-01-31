@@ -24,6 +24,6 @@ else
 fi
 
 # Set Permissions 
-RUN_COMMAND 'rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"' "Setting rabbitmq permissions"
+RUN_COMMAND "rabbitmqctl set_permissions -p / roboshop \".*\" \".*\" \".*\"" "Setting rabbitmq permissions"
 
 END_TIMER
