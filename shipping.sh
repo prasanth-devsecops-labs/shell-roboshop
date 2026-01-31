@@ -21,7 +21,7 @@ for schema in "${SCHEMAS[@]}"; do
 done
 
 # Configure
-RUN_COMMAND "cp $(dirname "$0")/shipping.service /etc/systemd/system/shipping.service" "Copying Shipping Service"
+RUN_COMMAND "cp ${SCRIPT_DIR}/shipping.service /etc/systemd/system/shipping.service" "Copying Shipping Service"
 
 # Start Service
 SYSTEMD_SETUP "shipping"

@@ -7,7 +7,7 @@ START_TIMER
 # Prerequisites
 USER_ACCESS_CHECK
 
-RUN_COMMAND "cp $(dirname "$0")/mongo.repo /etc/yum.repos.d/mongo.repo" "Copying Mongo Repo"
+RUN_COMMAND "cp ${SCRIPT_DIR}/mongo.repo /etc/yum.repos.d/mongo.repo" "Copying Mongo Repo"
 
 if rpm -q mongodb-org &> /dev/null; then
     echo -e "MongoDB is $G ALREADY INSTALLED $N .. Skipping installation."

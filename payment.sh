@@ -10,7 +10,7 @@ USER_ACCESS_CHECK
 PYTHON_APP_SETUP "payment"
 
 # Configure Service
-RUN_COMMAND "cp $(dirname "$0")/payment.service /etc/systemd/system/payment.service" "Copying Payment Service"
+RUN_COMMAND "cp ${SCRIPT_DIR}/payment.service /etc/systemd/system/payment.service" "Copying Payment Service"
 
 # Start Service
 SYSTEMD_SETUP "payment"

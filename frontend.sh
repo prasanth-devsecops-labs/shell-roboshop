@@ -9,7 +9,7 @@ NGINX_SETUP "frontend"
 
 # 2. Configure Reverse Proxy
 # Ensure nginx.conf is in the same directory as this script
-RUN_COMMAND "cp $(dirname "$0")/nginx.conf /etc/nginx/nginx.conf" "Copying Nginx Configuration"
+RUN_COMMAND "cp ${SCRIPT_DIR}/nginx.conf /etc/nginx/nginx.conf" "Copying Nginx Configuration"
 
 # 3. Final Restart to apply Proxy rules
 RUN_COMMAND "systemctl restart nginx" "Restarting Nginx"

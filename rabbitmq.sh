@@ -7,7 +7,7 @@ START_TIMER
 USER_ACCESS_CHECK
 
 # Setup Repo and Install
-RUN_COMMAND "cp $(dirname "$0")/rabbitmq.repo /etc/yum.repos.d/rabbitmq.repo" "Copying rabbitmq Repo"
+RUN_COMMAND "cp ${SCRIPT_DIR}/rabbitmq.repo /etc/yum.repos.d/rabbitmq.repo" "Copying rabbitmq Repo"
 RUN_COMMAND "dnf install rabbitmq-server -y" "Installing rabbitmq-server"
 
 # START THE SERVICE FIRST
