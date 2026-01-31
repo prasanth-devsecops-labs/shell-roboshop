@@ -12,6 +12,13 @@ SCRIPT_NAME=$(basename "$0")
 LOG_FILE="${LOGS_FOLDER}/${SCRIPT_NAME}.log"
 mkdir -p "$LOGS_FOLDER"
 
+handle_error() {
+  echo -e "$R Critical Error occurred! Check logs at: ${LOG_FILE} $N"
+}
+
+# Only trigger handle_error if the script exits due to an error (set -e)
+trap 'handle_error' ERR
+
 USER_ACCESS_CHECK() {
     if [ $USERID -ne 0 ]; then
         echo -e "$R Please run this script with root user access $N" | tee -a $LOG_FILE
