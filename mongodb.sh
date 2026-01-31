@@ -1,48 +1,23 @@
 #!/bin/bash
 
-R="\e[31m"
-G="\e[32m"
-Y="\e[33m"
-N="\e[0m"
+source ./common.sh
 
-# USER_HOME_DIR=$HOME
+START_TIMER
 
-USERID=$(id -u)
-LOGS_FOLDER="/var/log/shell-roboshop"
-SCRIPT_NAME=$(basename "$0")
-LOG_FILE="${LOGS_FOLDER}/${SCRIPT_NAME}.log"
+# Prerequisites
+USER_ACCESS_CHECK
 
-mkdir -p $LOGS_FOLDER
-
-VALIDATE() {
-    if [ $1 -ne 0 ]; then
-        echo -e "$2 .. $R FAILURE $N" | tee -a $LOG_FILE
-        exit 1
-    else
-        echo -e "$2 .. $G SUCCESS $N" | tee -a $LOG_FILE
-    fi
-}
-
-cp mongo.repo /etc/yum.repos.d/mongo.repo | tee -a $LOG_FILE
-VALIDATE $? "Creating mongo repo file"
+RUN_COMMAND "cp $(dirname "$0")/mongo.repo /etc/yum.repos.d/mongo.repo" "Copying Mongo Repo"
 
 if rpm -q mongodb-org &> /dev/null; then
     echo -e "MongoDB is $G ALREADY INSTALLED $N .. Skipping installation."
 else
-    dnf install mongodb-org -y &>>$LOG_FILE
-    VALIDATE $? "installing mongo-server"
+    RUN_COMMAND "dnf install mongodb-org -y" "installing mongo-server"
 fi
 
-systemctl enable mongod &>>$LOG_FILE
-VALIDATE $? "Enabling mongod"
+RUN_COMMAND "sed -i "s/127.0.0.1/0.0.0.0/g" /etc/mongod.conf" "Changing ip bind"
 
-systemctl start mongod
-VALIDATE $? "Starting mongod"
+# Start Service
+SYSTEMD_SETUP "mongod"
 
-#127.0.0.1 to 0.0.0.0 in /etc/mongod.conf
-
-sed -i "s/127.0.0.1/0.0.0.0/g" /etc/mongod.conf
-VALIDATE $? "Changing ip bind"
-
-systemctl restart mongod
-VALIDATE $? "Restarting mongod"
+END_TIMER

@@ -1,60 +1,28 @@
 #!/bin/bash
+source ./common.sh
 
-START_TIMESTAMP=$(date +%s)
-START_TIME_READABLE=$(date)
+START_TIMER
 
-R="\e[31m"
-G="\e[32m"
-Y="\e[33m"
-N="\e[0m"
+# Prerequisites
+USER_ACCESS_CHECK
 
-# USER_HOME_DIR=$HOME
+# Install Redis 7 via modules
+RUN_COMMAND "dnf module reset redis -y" "Resetting default Redis module"
+RUN_COMMAND "dnf module enable redis:7 -y" "Enabling Redis 7 module"
+RUN_COMMAND "dnf install redis -y" "Installing Redis"
 
-USERID=$(id -u)
-LOGS_FOLDER="/var/log/shell-roboshop"
-SCRIPT_NAME=$(basename "$0")
-LOG_FILE="${LOGS_FOLDER}/${SCRIPT_NAME}.log"
+# Update Configuration
+# Using a specific path /etc/redis/redis.conf (standard for RHEL)
+if [ -f /etc/redis/redis.conf ]; then
+    RUN_COMMAND "sed -i 's/127.0.0.1/0.0.0.0/g' /etc/redis/redis.conf" "Updating Bind IP to 0.0.0.0"
+    RUN_COMMAND "sed -i 's/protected-mode yes/protected-mode no/g' /etc/redis/redis.conf" "Disabling Protected Mode"
+else
+    # Some versions keep it in /etc/redis.conf
+    RUN_COMMAND "sed -i 's/127.0.0.1/0.0.0.0/g' /etc/redis.conf" "Updating Bind IP in /etc/redis.conf"
+    RUN_COMMAND "sed -i 's/protected-mode yes/protected-mode no/g' /etc/redis.conf" "Disabling Protected Mode"
+fi
 
-mkdir -p $LOGS_FOLDER
+# Start and Enable Service
+SYSTEMD_SETUP "redis"
 
-VALIDATE() {
-    if [ $1 -ne 0 ]; then
-        echo -e "$2 .. $R FAILURE $N" | tee -a $LOG_FILE
-        exit 1
-    else
-        echo -e "$2 .. $G SUCCESS $N" | tee -a $LOG_FILE
-    fi
-}
-
-dnf module disable redis -y &>>LOG_FILE
-VALIDATE $? "Disable redis"
-
-dnf module enable redis:7 -y &>>LOG_FILE
-VALIDATE $? "Enable redis:7"
-
-dnf install redis -y &>>LOG_FILE
-VALIDATE $? "Install redis"
-
-sed -i 's/127.0.0.1/0.0.0.0/g' /etc/redis/redis.conf
-sed -i 's/protected-mode yes/protected-mode no/g' /etc/redis/redis.conf
-VALIDATE $? "redis conf file changes"
-
-systemctl enable redis &>>LOG_FILE
-VALIDATE $? "Enable redis"
-
-systemctl restart redis &>>LOG_FILE
-VALIDATE $? "Start redis"
-
-
-END_TIMESTAMP=$(date +%s)
-# Calculate difference
-DURATION=$((END_TIMESTAMP - START_TIMESTAMP))
-
-# Format the output into Minutes and Seconds
-MINUTES=$((DURATION / 60))
-SECONDS_REM=$((DURATION % 60))
-
-echo -e "\n$G------------------------------------------$N"
-echo -e "Script Started at: $START_TIME_READABLE"
-echo -e "Total Time Taken:  $G ${MINUTES}m ${SECONDS_REM}s $N"
-echo -e "$G------------------------------------------$N"
+END_TIMER

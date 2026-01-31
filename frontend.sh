@@ -1,31 +1,33 @@
 #!/bin/bash
+source ./common.sh
 
-START_TIMESTAMP=$(date +%s)
-START_TIME_READABLE=$(date)
+START_TIMER
+USER_ACCESS_CHECK
 
-R="\e[31m"
-G="\e[32m"
-Y="\e[33m"
-N="\e[0m"
+# 1. Install Nginx and Download Code
+NGINX_SETUP "frontend"
 
-# USER_HOME_DIR=$HOME
+# 2. Configure Reverse Proxy
+# Ensure nginx.conf is in the same directory as this script
+RUN_COMMAND "cp $(dirname "$0")/nginx.conf /etc/nginx/nginx.conf" "Copying Nginx Configuration"
 
-USERID=$(id -u)
-LOGS_FOLDER="/var/log/shell-roboshop"
-SCRIPT_NAME=$(basename "$0")
-LOG_FILE="${LOGS_FOLDER}/${SCRIPT_NAME}.log"
-MONGODB_HOST=mongodb.prashum.online
+# 3. Final Restart to apply Proxy rules
+RUN_COMMAND "systemctl restart nginx" "Restarting Nginx"
 
-mkdir -p $LOGS_FOLDER
+# 4. Verify
+RUN_COMMAND "systemctl is-active nginx" "Nginx Verify Active Status"
 
-VALIDATE() {
-    if [ $1 -ne 0 ]; then
-        echo -e "$2 .. $R FAILURE $N" | tee -a $LOG_FILE
-        exit 1
-    else
-        echo -e "$2 .. $G SUCCESS $N" | tee -a $LOG_FILE
-    fi
-}
+END_TIMER
+
+
+#!/bin/bash
+
+source ./common.sh
+
+START_TIMER
+
+# Prerequisites
+USER_ACCESS_CHECK
 
 dnf module disable nginx -y &>>$LOG_FILE
 VALIDATE $? "disabling nginx"

@@ -1,37 +1,17 @@
 #!/bin/bash
 
-R="\e[31m"
-G="\e[32m"
-Y="\e[33m"
-N="\e[0m"
+source ./common.sh
 
-# USER_HOME_DIR=$HOME
+START_TIMER
 
-USERID=$(id -u)
-LOGS_FOLDER="/var/log/shell-roboshop"
-SCRIPT_NAME=$(basename "$0")
-LOG_FILE="${LOGS_FOLDER}/${SCRIPT_NAME}.log"
+# Prerequisites
+USER_ACCESS_CHECK
 
-mkdir -p $LOGS_FOLDER
+RUN_COMMAND "dnf install mysql-server -y" "installing mysql-server"
 
-VALIDATE() {
-    if [ $1 -ne 0 ]; then
-        echo -e "$2 .. $R FAILURE $N" | tee -a $LOG_FILE
-        exit 1
-    else
-        echo -e "$2 .. $G SUCCESS $N" | tee -a $LOG_FILE
-    fi
-}
+# Start Service
+SYSTEMD_SETUP "mysqld"
 
+RUN_COMMAND "mysql_secure_installation --set-root-pass RoboShop@1" "root password setup for mysql-server"
 
-dnf install mysql-server -y &>>$LOG_FILE
-VALIDATE $? "installing mysql-server"
-
-systemctl enable mysqld &>>$LOG_FILE
-VALIDATE $? "enabling mysql-server"
-
-systemctl restart mysqld &>>$LOG_FILE
-VALIDATE $? "starting mysql-server"
-
-mysql_secure_installation --set-root-pass RoboShop@1 &>>$LOG_FILE
-VALIDATE $? "root password setup for mysql-server"
+END_TIMER
