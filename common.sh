@@ -109,7 +109,7 @@ JAVA_APP_SETUP() {
 
 NGINX_SETUP() {
     local SERVICE_NAME=$1  # Change: No longer hardcoded!
-    local APP_URL="https://roboshop-artifacts.s3.amazonaws.com{SERVICE_NAME}-v3.zip"
+    local APP_URL="https://roboshop-artifacts.s3.amazonaws.com/${SERVICE_NAME}-v3.zip"
 
     echo -e "${Y}Configuring Web Server for: $SERVICE_NAME ${N}"
     
