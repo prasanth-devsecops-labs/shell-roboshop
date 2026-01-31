@@ -5,6 +5,7 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 USERID=$(id -u)
 LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$(basename "$0")

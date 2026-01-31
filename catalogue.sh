@@ -13,8 +13,8 @@ NODE_JS_INSTALL
 NODEJS_APP_SETUP "catalogue"
 
 # catalogue Specific Configs
-RUN_COMMAND "cp $(dirname "$0")/mongo.repo /etc/yum.repos.d/mongo.repo" "Copying Mongo Repo"
-RUN_COMMAND "cp $(dirname "$0")/catalogue.service /etc/systemd/system/catalogue.service" "Copying Service File"
+RUN_COMMAND "cp ${SCRIPT_DIR}/mongo.repo /etc/yum.repos.d/mongo.repo" "Copying Mongo Repo"
+RUN_COMMAND "cp ${SCRIPT_DIR}/catalogue.service /etc/systemd/system/catalogue.service" "Copying Service File"
 
 # Schema Load
 RUN_COMMAND "dnf install mongodb-mongosh -y" "Installing Mongo Client"
