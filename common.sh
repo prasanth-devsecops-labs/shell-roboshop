@@ -32,8 +32,8 @@ RUN_COMMAND() {
     local COMMAND="$1"
     local MESSAGE="$2"
 
-    echo -ne "starting $MESSAGE...."
-    $COMMAND &>>$LOG_FILE
+    echo -ne "Starting $MESSAGE ... "
+    eval "$COMMAND" &>>$LOG_FILE
 
     if [ $? -ne 0 ]; then
         echo -e "$R FAILURE $N"
