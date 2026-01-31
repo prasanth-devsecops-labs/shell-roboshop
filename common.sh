@@ -19,12 +19,10 @@ USER_ACCESS_CHECK() {
 }
 
 USER_ADD_CHECK() {
-    id roboshop &>>$LOG_FILE
-    if [ $? -ne 0 ]; then
-        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
-        VALIDATE $? "user creation"
+    if id roboshop &>>$LOG_FILE; then
+        echo -e "roboshop user already exists ... $Y SKIPPING $N"
     else
-        echo -e "roboshop user already exists $Y SKIPPING $N"
+        RUN_COMMAND "useradd --system --home /app --shell /sbin/nologin --comment 'roboshop system user' roboshop" "Creating roboshop user"
     fi
 }
 
@@ -73,7 +71,7 @@ NODE_JS_INSTALL() {
 # THE MASTER BASE SETUP (Shared by ALL apps)
 APP_PRE_SETUP() {
     local SERVICE_NAME=$1
-    local APP_URL="https://roboshop-artifacts.s3.amazonaws.com{SERVICE_NAME}-v3.zip"
+    local APP_URL="https://roboshop-artifacts.s3.amazonaws.com/${SERVICE_NAME}-v3.zip"
 
     USER_ADD_CHECK
     
